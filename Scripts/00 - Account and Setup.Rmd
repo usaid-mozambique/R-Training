@@ -1,0 +1,347 @@
+---
+title: "Motivation and Setup"
+subtitle: "PEPFAR Mozambique R Trainings: September 2022"
+author: "Author: Karishma Srikanth"
+date: "9/13/2022"
+output:
+  github_document:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+This is the first session in the series of R Trainings for the PEPFAR/Mozambique team in September 2022.
+
+This tutorial is adapted from the coRps R Building Blocks Series (RBBS) , specially [Part 0 (Software and Account Setup)](https://usaid-oha-si.github.io/corps/rbbs/2022/01/28/rbbs-0-setup.html) and [Part 2 - (Visualizations)](https://usaid-oha-si.github.io/corps/rbbs/2022/02/14/rbbs-2-visualization-part1.html). 
+
+In order to make the most of this training series, participants should have a number of account setup and software pre-configured so you can actively participate during the sessions.
+
+## Software & Package Installations
+
+### Installing R and RStudio
+
+- If you don’t use RStudio Cloud, above, you will need to install R and RStudio.
+  - You can install R on your USAID GFE, by going to Start > Microsoft Endpoint manager > Software Center. Once there, you can select the Application called “R for Windows” and click “Install”. If working on a personal machine, you can install R from CRAN. Select “Download R for Windows” and then “base” and follow the instructions for installing that pop up when you launch the .exe file from your downloads.
+  - To install RStudio on your GFE, you should submit a M/CIO Help Desk ticket and they will install it for you in person. If submitting, please (1) ask M/CIO to add RStudio back to Software Center and (2) also submit a ticket for GitHub Desktop, below. If working on a personal machine, you can install RStudio from this site. Select “Download” for the free version and follow the instructions for installing that pop up when you launch the .exe file from your downloads.
+  
+### Setting up RStudio Global Options
+
+It’s best practice to start with a clean R session each time you load up RStudio, so you will want to adjust some default option in your RStudio. To access these, in the menu bar at the top, navigate to Tools > Global Options.
+
+-Here are the places you will want to make changes to the default options:
+  - Un-check “Result most recent opened project at Startup"
+  - Un-check “Restore .RData into Workspace at Startup”
+  - Change dropdown to “Never” for “Save workspace to .RData on exit”
+  - Un-check “Always save history (even when not saving .RData)
+  
+### Setting up RTools
+
+Some packages require some additional “building” and need something called RTools installed. You can set this up yourself by following the steps laid out here. You will need to [download R tools from CRAN](https://cran.r-project.org/bin/windows/Rtools/rtools40.html) and **override the default** to install it to your Documents folder.
+
+Modify the code chunk below replacing USER_NAME with your local username, then run the code chunk below from within an R-studio session.
+
+```{r, eval = FALSE}
+# Find path for RTools
+Sys.setenv(PATH = paste("C:\\Users\\USER_NAME\\Documents\\Rtools\\bin", Sys.getenv("PATH"), sep = ";"))
+Sys.setenv(BINPREF = "C:\\Users\\USER_NAME\\Documents\\Rtools\\mingw_$(WIN)/bin/")
+options(buildtools.check = NULL)
+# Check
+install.packages("pkgbuild") # pkgbuild is not available (for R version 3.5.0)
+install.packages("remotes") # make sure you have the latest version from CRAN
+remotes::install_github("r-lib/pkgbuild") # install updated version of pkgbuild from GitHub
+pkgbuild::find_rtools()
+```
+
+- Before we move forward, please take a second to ensure that you have the following software installed on your device:
+  - R
+  - RStudio
+  - RTools
+  - Active Github account
+  - Github Desktop
+  - Git (with a RStudio connection)
+  
+### Installing Packages
+
+Packages basically exist as a “collection of functions, data, and documentation that extends the capabilities of base R” ([R for Data Science, Introduction](https://r4ds.had.co.nz/introduction.html))
+
+When you install R and RStudio, you will have access to a set of standard (or base) packages that are part of R source code. These packages contain basic functions in base R. We will also need to install additional packages to our device in order to gain access to specific functions that make R significantly more user-friendly.
+
+Lastly, R packages are stored in directories called libraries. To load a package to your RStudio workspace, you must call `library(pkgname)`. Importantly, there is a distinction between installing a package and loading a package to your workspace.
+
+To check what packages are installed in your current R session, you can type `sessionInfo()`. These packages are the base packages thar are installed by RStudio.
+
+```{r}
+sessionInfo()
+```
+
+- Some helpful package installation tips:
+  - Package names are case sensitive
+  - Sometimes you will be prompted to update older packages when you are installing a new package. You may choose “Yes” but just be wary that updating packages can sometimes take some time to run. If you choose not to update packages, be aware that package conflicts may through errors in your code down the road.
+  - Packages have to be installed before they can be loaded:
+    - Once a package is installed, we do not need to reinstall it unless there is an update to the package
+    - However, any time we want to use functions within a certain package, we must load the library for that package every time 
+
+#### Installing Starter Packages from CRAN
+
+With proprietary programs like Excel, Tableau, or Stata, all of your functions are built into the software. With open-source packages, like R, on the other hand, we need to load different libraries or packages that are written by other organization or individual users. To install a package from CRAN, we use the command `install.packages()`. Copy and paste the code chunk into your console in R to install all the required packages. We will discuss what packages/libraries and functions are in our next session.
+
+```{r, eval = FALSE}
+install.packages("tidyverse")
+install.packages("gt")
+install.packages("scales")
+install.packages("patchwork")
+install.packages("remotes")
+```
+
+Now, that you have these packages installed, you can load the packages you need into your working environment.
+
+```{rm eval = FALSE}
+library(tidyverse)
+library(glamr)
+library(glitr)
+
+```
+
+#### Installing Starter Packages from Github
+
+We also need to install packages from other locations, like GitHub, and will use a slightly different command, `remotes::install_github()`. You will need to enter the following command into your console. These are packages developed by OHA that we will cover in-depth in later sessions.
+
+Note - these packages may take some time to install.
+
+```{r, eval = FALSE}
+remotes::install_github("USAID-OHA-SI/gagglr", build_vignettes = TRUE)
+remotes::install_github("USAID-OHA-SI/gophr", build_vignettes = TRUE)
+remotes::install_github("USAID-OHA-SI/glitr", build_vignettes = TRUE)
+remotes::install_github("USAID-OHA-SI/glamr", build_vignettes = TRUE)
+remotes::install_github("USAID-OHA-SI/grabr", build_vignettes = TRUE)
+```
+  
+## Setting up your first RProject
+
+### What is an project in RStudio?
+
+A project is directory that contains all the contents, scripts, and resources that are related to analysis for a specific project. These are particularly useful if we have context-specific analyses that we wish to keep separate.
+
+The most beneficial aspect about creating a project in RStudio is that there is a specific working directory associated with each project - this allows us to keep track of all the files that are pertinent to a specific analysis and easily read files from the working directory.
+
+- Steps to create a RProject:
+  1. Open RStudio and go to the File menu and select `New Project`.
+  2. In the `New Project` window, choose `New Directory`. Then, choose `New Project`. Name your new directory `Intro-to-R` and then "Create the project as subdirectory of” and select a folder on your computer (preferably your folder for R Trainings). Click on `Create Project`.
+  3. After your project is completed, if the project does not automatically open in RStudio, then go to the File menu, select Open Project, and choose `Intro-to-R.Rproj`.
+  4. When RStudio opens, you will see three panels in the window.
+  5. Go to the File menu and select New File, and select R Script to open a script in the source window.
+  
+Let's check on our working directory now that we have or Project set up using `getwd()`
+```{r, eval = FALSE}
+getwd()
+```
+## Coding in RStudio!
+
+For these sessions, we’ll be using RStudio which is an IDE, “Integrated development environment” that makes it easier to work with R. For help on getting setup and installing packages, please reference this guide.
+
+RStudio may seem imposing at first, but in no time you’ll know where everything is. 
+
+Your RStudio will be broken down into 4 main components:
+
+  - **Source**: this box won’t be here when you first open RStudio. If you
+    go to File > New File > R Script, you will see this box. This is
+    where you can write/save or open your R scripts.
+  - **Console**: below Source, you will have your console. This is where all
+    your R code is excuted and where the outputs are displayed. If you
+    want to run a line as a one off, you can write it here. There is an
+    tab here called Terminal, which is where you can run code through
+    the command line, git for example.
+  - **Environment**: moving to the upper right hand corner, you have your
+    environment tab. This box contains all the datasets or objects you
+    have stored in your current working session.
+  - **Catch All**: this last box has a lot of different features. You can
+    see a number of tabs, which allow you to expore your
+    directories/files, this is where your graphs will print, and where
+    the help files are located.
+    
+### Coding in the Console Window
+
+The console is where R is executing code. This is where the result of a command will show up.
+
+You can type commands directly into the console widow, but they will be gone when you close the session.
+
+Give it a try now by typing `5+3` in the console window below.
+
+### Coding in the Script Editor (Source Window)
+
+It's best practice to enter commands and code in the script editor in order to save a history of your code. When you write code in a script editor, executing that code sends the highlighted/selected text to the R console to execute. You can do this by either hitting “Run” or pressing CTRL-ENTER. Code output will then be populated into the Console Window.
+
+To add a comment, simply just add a # at the beginning of a line. Notice below how R executes the command `5+3` but not `2+4` because of it is commented out.
+
+```{r}
+# 2+4
+5+3
+```
+
+### R Syntax
+
+When you code in the script editor, you can organize your code with headers and liberal comments to document each step of your flow.
+
+- Here are some of the main R syntax components that you will use:
+  - **Comments**: used to document code / functions or unselect lines of code from running (#)
+  - **Variables**: A variable represents a stored elements in your code that reference certain information
+  - **Assignment Operator**: used to assign values to variables
+
+Let's say I wanted the variable `x` to be equal to `3`. 
+```{r}
+x <- 3
+
+print(x)
+```
+
+*Question: In this example, which part of the phrase is the variable? The value? The assignment operator?*
+
+You can assign a variable any name! If I were storing a today’s date, I may call the variable `today_date`.
+
+- Here are some quick tips about naming variables:
+  - R is case sensitive - if you named a variable `Districts` and  called `districts` in R, R would not be able to return your variable because it does not recognize `districts`.
+  - Avoid starting variable names with a number
+  - Avoid using periods (.) in your variable names, as these are special operators in R as well
+  - Name your variables specifically but avoid lengthy names
+
+## Workflow and Organization
+
+R Scripts read exactly just like documents do. We have lines of code that R reads top-down and executes, with specific steps build off of what was done previously.
+
+### Organizing your R Script
+
+We can organize our scripts with a similar organization flow to organizing a document, to clean up the script visually and help you and others better understand what each part of the script is used for. We can utilize **comments** to add headers into our scripts.
+
+While there is no one right way to organize a script, let me show you what I do and what some of the most important components are.
+
+- Useful script sections for organization:
+  1. **Introduction**: name of author, purpose of script, date, notes
+  2. **Load Dependencies and Libraries*: set up global variables as well (variables you want to call on throughout the script)
+  3. **Functions**
+  4. **Import Data**
+  5. **Data Cleaning**
+  6. **Analysis/Visualization**
+  7. **Export**
+
+Here's what my set-up script looks like:
+
+```{r, eval = FALSE}
+# AUTHOR:   K. Srikanth | USAID
+# PURPOSE:  Set up training script
+# REF ID:   c2e621bd 
+# LICENSE:  MIT
+# DATE:     2022-09-14
+# UPDATED: 
+
+# DEPENDENCIES ------------------------------------------------------------
+  
+#LOAD PACKAGES
+
+  library(glamr)
+  library(tidyverse)
+  
+
+# GLOBAL VARIABLES --------------------------------------------------------
+      
+  #Grab metadata
+  msd_source <- source_info(file_path)
+  
+  ref_id <- "c2e621bd"
+
+# IMPORT ------------------------------------------------------------------
+  
+  #IMPORT MSD
+  si_path() %>% return_latest() %>% 
+    read_msd() %>% reshape_msd(clean = T)
+  
+
+# MUNGE -------------------------------------------------------------------
+  
+# VIZ ---------------------------------------------------------------------
+  
+# SPIN DOWN ---------------------------------------------------------------
+
+```
+
+
+## Exploring your data in R
+
+Now that we have some of the foundational pieces of the puzzle, let's practice putting it all together by inspecting some data in R!
+
+The dataset we’re using today is stored in the `glitr` package, OHA's data visualization package. It’s a masked HFR dataset that has information for FY50 on multi-month dispensing, MMD. Let’s take a look at the data using `glimpse()` and then `View()`. If you are getting an error, make sure you reinstall `glitr`.
+
+First, load your libraries if you have not already. For now, we only need the `glitr` and `tidyverse `package. 
+
+```{r, message = FALSE, warning= FALSE}
+library(glitr)
+library(tidyverse)
+```
+
+Let's do some inspecting of the package. Notice how I am utilizing comments in the code blocks to document each step.
+
+```{r}
+#see what datasets exist in the glitr package
+data(package = "glitr")
+```
+
+The `data()` loads datasets into our R environment for us to use as a data frame. Let's load the `hfr_mmd` data set.
+```{r}
+#load the dataset in your Global Environment
+data(hfr_mmd)
+```
+
+There are a few ways that you can inspect your data from here. Firstly, you can `glimpse()` your data, which prints out a preview of the data. With this, the indicators run vertically (with tpe) and data run horizontally.
+```{r}
+#prints out a preview of yoru data; indicators run vertically (with type) and data runs horizontally
+glimpse(hfr_mmd)
+```
+
+You can also view your data in a traditional tabular view, like you would in Excel, by either using the `View()` function or clicking on the data set in your Global Environment window.
+
+```{r, eval = FALSE}
+#your traditional tabular view
+View(hfr_mmd)
+```
+
+If you are curious about the structure of the data set, you can use the `str()` function to show the internal structure of the data. This includes number of rows by columns, list of variables and what type of data type each variable is, and a glimpse of what data falls under each variable.
+
+Notice how the variables have differing data types (i.e. `tx_curr` and the `tx_mmd` indicators are numeric, the `date` variable is a date variable, and the remaining are `character` variables.)
+
+```{r}
+#returns data structure
+str(hfr_mmd)
+```
+
+Finally, let's say you were curious about what `snu1s` were included in this dataset. There's a quick feature to count values like that in the `count()` function!
+
+Note: I am using the `%>%` operator, which is a pillar of the `tidyverse`. We will cover this more in-depth in later sessions.
+
+```{r}
+hfr_mmd %>% 
+  count(snu1)
+```
+
+Each row is a distinct reporting period (contained in the variables `date`, `fiscal_year`, and `hfr_pd`) with information on where the data were reported (contained in the variables `operatingunit` through `psnu`, which we can write `operatingunit:pnsu`), by whom (`mech_code`) and the values measured for number/share of individuals on treatment and multi-month dispensing (MMD) (`tx_curr:share_tx_mmd.o3mo`). For more information on the dataset, we can use the `?` to see the documentation through a "help" file. The `?` is extremely useful for getting help files across all functions. 
+
+```{r, eval = FALSE}
+#get help with ?[function] or place your cursor on the function and hit F1
+?hfr_mmd
+```
+
+## What's next?
+
+Our next session will cover the overview of the Data Science Workflow, the importance of tidy data, and utilizing the `tidyverse` for data wrangling needs.
+
+## Learning Resources & Training References
+
+  - [R for Data Science, Introduction](https://r4ds.had.co.nz/)
+  - [CorPs RBBS - Part 0 (Software and Account Setup)](https://usaid-oha-si.github.io/corps/rbbs/2022/01/28/rbbs-0-setup.html)
+  - [CorPs RBBS - Part 2 (Visualizations)](https://usaid-oha-si.github.io/corps/rbbs/2022/02/14/rbbs-2-visualization-part1.html)
+  - [HBC Intro-to-R Flipped: R Workshop (2018)](https://github.com/hbctraining/Intro-to-R-flipped/blob/master/lessons/01_introR-R-and-RStudio.md)
+
+
