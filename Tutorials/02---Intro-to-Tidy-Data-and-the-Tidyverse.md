@@ -16,8 +16,8 @@ Author: Karishma Srikanth
       - [Select](#select)
       - [Mutate](#mutate)
       - [Summarise](#summarise)
-  - [How to tidy and data with the
-    Tidyverse](#how-to-tidy-and-data-with-the-tidyverse)
+  - [How to tidy data with the
+    Tidyverse](#how-to-tidy-data-with-the-tidyverse)
   - [Put it all together\!](#put-it-all-together)
       - [Practice at home](#practice-at-home)
 
@@ -662,7 +662,7 @@ hts %>%
     ## 5 HTS_TST_POS results             1040
     ## 6 HTS_TST_POS targets              820
 
-## How to tidy and data with the Tidyverse
+## How to tidy data with the Tidyverse
 
 When you are pivoting a dataset, you are restructuring the physical
 layout into an manner. Stacking columns into new rows and creating new
