@@ -1,30 +1,340 @@
 ---
-title: "Untitled"
-output: github_document
+title: "Tidy Data and the Tidyverse"
+subtitle: "PEPFAR Mozambique R Trainings: September 2022"
+author: "Author: Karishma Srikanth"
+date: "9/13/2022"
+output:
+  github_document:
+    toc: true
+    toc_depth: 3
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## GitHub Documents
+## Introduction
 
-This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
+This is the second session in the series of R Trainings for the PEPFAR/Mozambique team in September 2022.
 
-## Including Code
+This tutorial is adapted from the coRps R Building Blocks Series (RBBS) , specially [Part 4 (Tidy Data)](https://usaid-oha-si.github.io/corps/rbbs/2022/03/07/rbb-tidydata.html) and [Part 5 - Introduction to the Tidyverse](https://usaid-oha-si.github.io/corps/rbbs/2022/03/21/rbb-tidyverseintro.html). 
 
-You can include R code in the document as follows:
+In order to make the most of this training series, participants should have a number of account setup and software pre-configured so you can actively participate during the sessions. Please ensure you have RStudio, RTools and R installed on your device prior to this session.
 
-```{r cars}
-summary(cars)
+### Load Packages
+
+Let's get started by loading some important packages. When we load the `tidyverse`, you'll notice that a couple other packages are being loaded as well, including `tidyr()`, the main set of tools to tidy data. We'll focus more in depth on how to use the `tidyverse` toolkit in the next session.
+
+```{r}
+library(tidyverse) #install.packages("tidyverse")
+```
+```{r, message=F}
+library(scales) #install.packages("scales")
+library(glitr) #remotes::install_github("USAID-OHA-SI/glitr", build_vignettes = TRUE)
+library(glamr)
+library(here)
+library(readxl)
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+## Basics of Tidy Data
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+In this session, we'll talk about organizing data in an efficient, reproducible, and collaborative way, known as Tidy Data. While this process takes some upfront work and deliberate thought about data structure, this work pays off today and in the long-run. By having data in a tidy format and utilizing the tool in the `tidyverse`, you'll spend less time working on and munging messy data and have more time to focus on the analytic questions.
+
+So what is tidy data?
+
+**Tidy data** is a standard way of mapping the meaning of a dataset to its structure. There are 3 central components to tidy data.
+
+  1. Each variable forms a column
+  2. Each observation forms a row
+  3. Each cell is a measurement
+
+- What makes tidy data so important?
+  - Organizing and sharing data in a consistent and predictable way means less adjustment, time, and effort for all
+  - Enhances analytic capabilities
+    - Easier to filter data
+    - Easier to summarize / calculate aggregates (across time / elements)
+    - Easier to make pivot tables
+    - Easier to manipulate data all at once
+  - By using tools that all expect tidy data as inputs, you can build and iterate really powerful workflows that allow you to reproduce analyses and make it easier to understand, update, and reuse
+
+Let's take a look at this visually using sample data from the `glitr` package with `glimpse()`, `head()`, and  `View()`.
+
+```{r}
+#load the dataset in your Global Environment
+data(hts)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+```{r}
+#prints out a preview of your data; indicators run vertically (with type) and data runs horizontally
+glimpse(hts)
+head(hts)
+```
+```{r, eval = FALSE}
+#your traditional tabular view
+View(hts)
+```
+
+This is an example of a tidy dataset. Each row is a distinct reporting period (contained in the variable `period`) with information on where the data were reported (in `operatingunit`) and by whom (`primepartner`). Each column is a variable, showing testing indicators across the Modality/Age/Sex/Result disaggregations and the value in the `value` column.  For more information on the dataset, we can use the `?` to see the documentation through a "help" file. The `?` is extremely useful for getting help files across all functions. 
+
+### Data Structure
+
+Once we have the value, observation, and variable defined, we can start to talk more about how these elements are physically structured in the dataset. Dataset structure refers to the physical layout of the data, both in how it is physically structured and how it appears in the sheet when you open it. 
+
+Data CAN be structured in many ways, but ideally it is structured as either long or wide. 
+
+**Long (stacked/panel)** data stacks the data. For example, the measurement (period) in this dataset have been stored in a cell rather than a column name for `FY49` an `FY50`. Value refers to the number of individuals tested.
+
+
+```{r}
+#prints out a preview of your data; indicators run vertically (with type) and data runs horizontally
+head(hts)
+```
+
+**Wide** spreads the data out to the right with many columns. Here, each observation is based on a OU + primepartner + indicator + modality + period_type. Unit of measurement is the number of individuals tested in each quarter. We can use `tidyr::pivot_wider()` to pivot this HTS data wide. 
+
+```{r}
+#Pivot data wide
+hts_wide <- hts %>% 
+  pivot_wider(names_from= period, values_from = value)
+head(hts_wide)
+```
+
+What are the advantages of working with **long data**? First, most visualization/statistical software/Excel is designed to work with long data. Long data can easily be filtered, pivoted, or analyzed. Row optimization facilitates analysis. Sometimes, you’ll see a mixture of long and wide data which is not ideal.
+
+As a rule of thumb, if a column name contains data on which you wish to sort, then it should likely be stored in a cell instead of a column name. However, there are some cases in which **wide data** structure may be useful. For example, wide data structures are useful when you are exploring data in Tableau. As such, when you are preparing your data, think carefully about the data structure that is optimal for your analysis.
+
+**Okay so…how do I tidy and manipulate data in R?**
+
+## Introduction to The Tidyverse
+
+If you are an avid R user, you likely aware that are a many ways of accomplishing a task with R. Being an open source tool, R has many packages and approaches to tackling different types of analytically and data problems. This broad choice set can initially seem liberating. But, as you work your way through different packages, function inputs, data outputs, you may start to realize that the numerous ways of accomplishing a task can be detrimental. Having to switch back and forth between different package philosophies, grammar and data structures can become counterproductive. This leads us to the Tidyverse.
+
+What is it? According to the Tidyverse [webpage](https://www.tidyverse.org/packages/), "The tidyverse is an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures." The packages fit together like puzzle pieces, with each package focusing on on part of the data science process. Before we dive into the process, let's load the tidyverse and explore it a bit.
+
+Let's get started by installing `install.packages("tidyverse")` and loading the `library(tidyverse)` to explore what packages are available for use. Upon loading, you will notice that 8 core packages are imported into the Rstudio session. Normally, when we use the `library(package)` command, we expect a single package to be loaded. The tidyverse is an exception to this in that it loads multiple packages when called.
+
+```{r echo = T}
+library(tidyverse)
+```
+
+So what do each of these packages do? Let's review (paraphrased from [Tidyverse webpage](https://www.tidyverse.org/packages/)):
+
+1.  `ggplot()` - is a system for creating graphics, based on The Grammar of Graphics. It is the only tidyverse package that does not use the %>% (pipe) operator to chain together ggplot() lines.
+2.  `dplyr()` - provides a grammar of data manipulation. The majority of commands are single data frame verbs (such as `filter`, `select`, `mutate`, `arrange`). However, the joining commands (`left_join`, `right_join`, `inner_join`, `full_join`) rely on two data frames as inputs.
+3.  `tidyr()`-provides a set of functions to help you in tidying data. Recall, that tidy data means each variable forms a column, each observation forms a row, and each cell is a measurement.
+4.  `readr()`-provides a fast and friendly way to read in rectangular data (such as csv, tst, and fwf). It has numerous functions to flexibly parse many types of data found on the wild.
+5.  `purrr()`- allows for replacing loops with cleaner code that is easier to write and read. It is an ideal tool for loading, joining and manipulating multiple MSDs at once, in a couple lines of code.
+6.  `tibble()`- tibble is an opinionated and modern re-imagining of the data frame. Tibbles are data.frames that do less and complain more, to your benefit.
+7.  `stringr()` - makes working with strings as easy as possible
+8.  `forcats()` - forcats provides a suite of useful tools that solve common problems with factors. We use forcats a ton for sorting columns to be plotted (`fct_reorder()`)
+
+```{r show package functions}
+# If you would like to explore the functions available in any of the tidyverse packages, use the following code chunk
+ls('package:tibble')
+```
+
+### Why use the Tidyverse?
+
+When we sit down to work with a data set on a computer, three things need to happen. First, we need to know what we want to do with the data. If it has merged cells, we will need to unmerge them. If things are labelled inconsistently, we'll need to relabel things in a standardized manner. If the data are wide when they should be long, we may have to change the physical layout of the rows and columns. To do all these things, we need to be able to communicate with a computer. If using Excel, we often do this through a series of points and clicks. If using R, Python, Stata or SAS, we can write computer code to tell a computer how something should be done. At the end of all this, we need to be able to get a computer to execute our code. The Tidyverse has been assembled with these steps in mind. It leverages action-oriented, descriptive functions to make it easier to express your data-related thoughts to the R program. As you get the hang of the syntax, you hopefully will find yourself with more time to think about what needs to be done and less time spent translating those tasks in code.
+
+Consistency is one the primary reason we rely on the tidyverse for so much. What does this mean in terms of R code?
+
+-   Function inputs - a data frame is always the first argument in a tidyverse function
+
+-   Tidy data - a data frame is expected to be tidy when passed as an input
+
+-   Tibble output - functions always return a tibble
+
+-   Piping - the pipe (%>%) operator guides the flow of operations
+
+When you put all these things together, the user experience tends to be much more pleasant. The predictability of what is required as an input (tidy data frame), what is expected as an output (tibble), layered on top of well named functions that can be easily chained together, leads to code that is easier to write, read and debug.
+
+Let's take a look at this visually using the `hts` data from the `glitr` package. Imagine that we wanted to do the following:
+
+1.  filter the data to only rows where the `primepartner` is Auriga and the `period` is FY50,
+
+2.  group the data together by `indicator` and `period_type`,
+
+3.  summarize the `value` for each of those groups.
+
+In base R, we would do something similar to the following:
+
+```{r hts}
+#load the and review the data to ensure what we want to do is possible
+library(glitr)
+data(hts)
+names(hts)
+str(hts)
+```
+
+```{r base r aggregation}
+aggregate(hts[(hts$primepartner == "Auriga") & (hts$period == "FY50"), ]$value,
+  by = list(
+    indicator = hts[(hts$primepartner == "Auriga") & (hts$period == "FY50"), ]$indicator,
+    period_type = hts[(hts$primepartner == "Auriga") & (hts$period == "FY50"), ]$period_type
+  ),
+  FUN = sum, na.rm = TRUE
+)
+```
+
+The code chunk above does give use the desired outcome, but for a new (or even experienced) R user it is quite hard to follow along given all the nested operations. How could we do the same operation using tidyverse functions? The code chunk below executes the same operations. The pipe operator allows us to chain together three separate actions to create the desired output. The syntax is quite different from the base R approach. Tidyverse functions are named after action verbs which describe what should be done to an input. Even if a user doesn't know R, they can probably deduce that the code below is filtering, grouping, and then summarizing something.
+
+```{r tidyverse aggregation}
+filter(hts, primepartner == "Auriga" & period == "FY50") %>% 
+  group_by(., indicator, period_type) %>% 
+  summarise(., total_results = sum(value, na.rm = T))
+```
+
+Let's take a look at the tidyverse approach line-by-line.
+
+`filter(hts, primepartner == "Auriga" & period == "FY50") %>%`
+
+In the first line, we are calling the `filter()` function to be used on the data frame `hts.` The next part of the filter function `primepartner == "Auriga" & period == "FY50"` provides the conditions by which rows should be selected. In this case, we would like to keep all rows where the primepartner is Auriga and the period is FY50. At the end of the line, we use the `%>%` operator to pass the resulting tibble to the next function.
+
+`group_by(., indicator, period_type) %>%`
+
+The `group_by()` function takes a data frame and converts it to a grouped tbl where operations are then performed "by group". Here, we ask R to group the data by indicator and period type. Again, the `%>%` tells R to pass the results to the next function.
+
+`summarise(., total_results = sum(value, na.rm = T))`
+
+Finally, the `summarise()` function creates a new column, `total_results`, that is populated with the summarized amount of `value`, by each of the groupings provided from the `group_by()` call -- indicator and period type.
+
+## How to wrangle data with the Tidyverse
+
+As reviewed above, the data science process has many phases across which many of the tidyverse packages can be called on to help out. In the remaining section, we will focus on the data wrangling portion using the `dplyr()` package.
+
+The [`dplyr()`](https://dplyr.tidyverse.org/) webpage describes the package as a grammar of data manipulation built on a consistent set of verbs that help you solve common data manipulation challenges. In total, the packages has over 290 functions, but in your day to day work you will likely be using some combination of 5 - 10 core functions. Let's go through some of these core functions, start with `filter()`, \`
+
+### Filter
+
+The `filter()` function is used to subset a data frame, based on logical conditions that hold true for different rows. To be retained, a row must produce a value of TRUE for all conditions. If a condition evaluates to NA, the row will be dropped. The `filter()` command is a row focused operation.
+
+```{r}
+# The filter function will select rows based on their values. How could we go about filtering the data to only keep TBClinic testing modality for the primepartner Auriga?
+hts %>% 
+  filter(modality == "TBClinic" & primepartner == "Auriga")
+```
+
+### Arrange
+
+The `arrange()` function is used to order the rows of a data frame based on the values of selected columns. By default, the function will return an data frame ordered from smallest to largest (ascending). Use the `desc()` option to sort in descending order. If multiple columns are passed to the function, they are used to break ties in the values in the preceding columns. The `arrange()` function is a row focused operation.
+
+```{r}
+# Sort the data frame we just filtered above from highest to lowest value
+hts %>% 
+  filter(modality == "TBClinic" & primepartner == "Auriga") %>% 
+  arrange(desc(value))
+```
+
+### Select
+
+The `select()` function is used to subset columns based on the column names or data type. It keeps or drops a column based on the input parameters. There are many selection features (`starts_with()`, `ends_with()`, `matches()`, and `contains()`) that can be applied to the subset function. The `select()` function is a column oriented operation.
+
+```{r}
+# Drop the operatingunit and primepartner from the dataframe
+# The negation (!) component in the select call tells R to keep everything
+# except the operatingunit and primepartner columns
+hts %>% 
+  filter(modality == "TBClinic" & primepartner == "Auriga") %>% 
+  arrange(desc(value)) %>% 
+  select(!c(operatingunit, primepartner))
+```
+
+### Mutate
+
+The `mutate()` function adds new variables and preserves existing ones. If you need to create a new column in your data based on the features of other columns, `mutate()` is your friend. Be aware that if an existing variable name is used in the mutate function, the resulting output will overwrite existing variables of the same name. Mutate is a column oriented operation.
+
+```{r}
+hts %>% 
+  filter(modality == "TBClinic" & primepartner == "Auriga") %>% 
+  arrange(desc(value)) %>% 
+  select(!c(operatingunit, primepartner)) %>% 
+  group_by(indicator, period_type) %>% 
+  mutate(summed_value = sum(value, na.rm = T)) %>% 
+  ungroup()
+```
+
+### Summarise
+
+The `summarise()` function creates a new data frame. The new data frame will have one (or more) rows for each combination of grouping variables. If you are `Stata` user, the command is similar to the [`collapse()`](https://www.stata.com/manuals/dcollapse.pdf) function. If using the function without a `group_by()` call, the output will have a single row summarising all observations of the input.
+
+```{r}
+hts %>% 
+  filter(modality == "TBClinic" & primepartner == "Auriga") %>% 
+  arrange(desc(value)) %>% 
+  select(!c(operatingunit, primepartner)) %>% 
+  group_by(indicator, period_type) %>% 
+  summarise(summed_value = sum(value, na.rm = T), .groups = "drop")
+```
+
+## How to tidy data with the Tidyverse
+
+When you are pivoting a dataset, you are restructuring the physical layout into an manner. Stacking columns into new rows and creating new columns to collect the values that have been transposed. 
+
+The column headers are transposed into one column and the values are all stored in one column now, making the data tidy and easier to work with.
+
+The process of physically altering the layout of a dataset by stacking columns into new rows and creating new columns to collect the values that have been transposed. 
+
+Let's take the example from before when we were talking about data structure. To pivot columns, we can use the [`tidyr`](https://tidyr.tidyverse.org/) package in the `tidyverse` to tidy and reshape data to be in a tidy format.
+
+To perform pivots in R, there are two primary functions:
+  
+  1. `pivot_longer()` - pivots your data long (stacked)
+  2. `pivot_wider()` - pivots your data wide (columns)
+  
+**Long Data**: stacked data. In this format, you can easily filter by the `primepartner` and `period`
+
+```{r}
+#prints out a preview of your data; indicators run vertically (with type) and data runs horizontally
+head(hts)
+```
+
+**Wide** spreads the data out to the right with many columns. Here, each observation is based on a OU + primepartner + indicator + modality + period_type. In the WIDE data, if you are “filtering” on the quarter, you will be turning columns on and off. This is cumbersome if you have many columns and not always transparent. 
+
+```{r}
+#Pivot data wide
+hts_wide <- hts %>% 
+  pivot_wider(names_from= period, values_from = value)
+head(hts_wide)
+```
+
+
+## Put it all together!
+
+#### Practice at home
+
+Problem: Use the dplyr verbs discussed to create a data frame that:
+
+-   summarizes indicator results (not targets / cumulative)
+
+-   for the only the first two quarters of FY49
+
+-   for only index-based testing modalities
+
+-   for the primeparter Auriga
+
+-   pivots the data wide by indicator (HTS_TST, HTS_TST_POS)
+
+```{r}
+#Homework solutions: Use the dplyr verbs discussed to create a data frame that summarizes indicator results for the first two quarters of FY49 for only index-based testing modalities for Auriga
+hts %>% 
+  filter(period_type == "results" & str_detect(modality, "Index") & primepartner == "Auriga" & period %in% c("FY49Q1", "FY49Q2")) %>% 
+  group_by(indicator, modality) %>% 
+  summarise(results_q1_q2 = sum(value, na.rm = T), .groups = "drop") %>% 
+  pivot_wider(names_from = indicator, values_from = results_q1_q2)
+```
+
+```{r}
+# Another approach, filtering later on in the flow
+hts %>% 
+  filter(modality %in% c("Index", "IndexMod"), period %in% c("FY49Q1", "FY49Q2")) %>% 
+  group_by(indicator, primepartner, period_type, modality) %>% 
+  summarise(results_q1_q2 = sum(value, na.rm = T), .groups = "drop") %>% 
+  arrange(primepartner) %>% 
+  filter(primepartner == "Auriga") %>% 
+    pivot_wider(names_from = indicator, values_from = results_q1_q2)
+
+```
