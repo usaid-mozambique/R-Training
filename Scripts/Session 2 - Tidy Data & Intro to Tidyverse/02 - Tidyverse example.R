@@ -13,6 +13,9 @@ library(readxl)
 #load the dataset in your Global Environment - we are using sample data from the `glitr` package
 data(hts)
 
+# Read csv
+hts <- read_csv("Data/training-data.csv")
+
 
 ## VIEW DATA -----------------------------------------------------------
 #prints out a preview of your data; indicators run vertically (with type) and data runs horizontally
