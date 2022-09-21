@@ -49,7 +49,7 @@ vignettes/*.pdf
 *.xlsx
 *.xls
 *.zip
-*.png
+#*.png
 *.twbx
 *.pptx
 
