@@ -196,31 +196,6 @@ Panorama (this can also be automated using an R package for API calls
 called `grabr`) and save this to the data folder that my `si_path()`
 routes to. This will be the folder that I save all of my MSDs in.
 
-``` r
-df_msd <- glamr::si_path() %>% #grab data folderpath
-  glamr::return_latest("MER_Structured_Datasets_PSNU_IM_FY20-23_20220812_v1_1_Mozambique") %>% #return latest file to match the pattern specified
-  gophr::read_msd() #read the MSD in to R
-
-head(df_msd) #inspect
-```
-
-    ## # A tibble: 6 x 43
-    ##   operating~1 opera~2 country snu1  snu1uid psnu  psnuuid snupr~3 typem~4 dreams
-    ##   <chr>       <chr>   <chr>   <chr> <chr>   <chr> <chr>   <chr>   <chr>   <chr> 
-    ## 1 Mozambique  h11Oyv~ Mozamb~ Namp~ hxMhtp~ Naca~ rzyQVC~ 2 - Sc~ N       N     
-    ## 2 Mozambique  h11Oyv~ Mozamb~ Sofa~ SEWXP7~ Nham~ aKC8ch~ 2 - Sc~ N       N     
-    ## 3 Mozambique  h11Oyv~ Mozamb~ Zamb~ BdBJXn~ Inha~ MrzLUX~ 2 - Sc~ N       Y     
-    ## 4 Mozambique  h11Oyv~ Mozamb~ Namp~ hxMhtp~ Riba~ DkiQIZ~ 2 - Sc~ N       N     
-    ## 5 Mozambique  h11Oyv~ Mozamb~ Namp~ hxMhtp~ Mecu~ YLkTM4~ 2 - Sc~ N       N     
-    ## 6 Mozambique  h11Oyv~ Mozamb~ Namp~ hxMhtp~ Ango~ xIowtH~ 2 - Sc~ N       N     
-    ## # ... with 33 more variables: prime_partner_name <chr>, funding_agency <chr>,
-    ## #   mech_code <chr>, mech_name <chr>, prime_partner_duns <chr>,
-    ## #   prime_partner_uei <chr>, award_number <chr>, indicator <chr>,
-    ## #   numeratordenom <chr>, indicatortype <chr>, disaggregate <chr>,
-    ## #   standardizeddisaggregate <chr>, categoryoptioncomboname <chr>,
-    ## #   ageasentered <chr>, age_2018 <chr>, age_2019 <chr>, trendscoarse <chr>,
-    ## #   sex <chr>, statushiv <chr>, statustb <chr>, statuscx <chr>, ...
-
 Now, let’s try to put this all together. We have our MSD loaded, so now
 we can draw on some of our tidyverse skills to work answer some analytic
 questions.
@@ -289,27 +264,6 @@ df_msd %>%
          standardizeddisaggregate == "Total Numerator")
 ```
 
-    ## # A tibble: 23 x 43
-    ##    operatin~1 opera~2 country snu1  snu1uid psnu  psnuuid snupr~3 typem~4 dreams
-    ##    <chr>      <chr>   <chr>   <chr> <chr>   <chr> <chr>   <chr>   <chr>   <chr> 
-    ##  1 Mozambique h11Oyv~ Mozamb~ Sofa~ SEWXP7~ Nham~ aKC8ch~ 2 - Sc~ N       N     
-    ##  2 Mozambique h11Oyv~ Mozamb~ Sofa~ SEWXP7~ Caia  yui33D~ 2 - Sc~ N       Y     
-    ##  3 Mozambique h11Oyv~ Mozamb~ Sofa~ SEWXP7~ Beira c4qdq9~ 2 - Sc~ N       Y     
-    ##  4 Mozambique h11Oyv~ Mozamb~ Sofa~ SEWXP7~ Marr~ ZMR1mJ~ 2 - Sc~ N       N     
-    ##  5 Mozambique h11Oyv~ Mozamb~ Sofa~ SEWXP7~ Chib~ Bp2zX2~ 2 - Sc~ N       N     
-    ##  6 Mozambique h11Oyv~ Mozamb~ Sofa~ SEWXP7~ Beira c4qdq9~ 2 - Sc~ N       Y     
-    ##  7 Mozambique h11Oyv~ Mozamb~ Sofa~ SEWXP7~ Buzi  qwJ8zD~ 2 - Sc~ N       N     
-    ##  8 Mozambique h11Oyv~ Mozamb~ Sofa~ SEWXP7~ Cher~ lZAKLV~ 2 - Sc~ N       N     
-    ##  9 Mozambique h11Oyv~ Mozamb~ Sofa~ SEWXP7~ Goro~ iuqTSk~ 2 - Sc~ N       N     
-    ## 10 Mozambique h11Oyv~ Mozamb~ Sofa~ SEWXP7~ Dondo QJviLU~ 2 - Sc~ N       N     
-    ## # ... with 13 more rows, 33 more variables: prime_partner_name <chr>,
-    ## #   funding_agency <chr>, mech_code <chr>, mech_name <chr>,
-    ## #   prime_partner_duns <chr>, prime_partner_uei <chr>, award_number <chr>,
-    ## #   indicator <chr>, numeratordenom <chr>, indicatortype <chr>,
-    ## #   disaggregate <chr>, standardizeddisaggregate <chr>,
-    ## #   categoryoptioncomboname <chr>, ageasentered <chr>, age_2018 <chr>,
-    ## #   age_2019 <chr>, trendscoarse <chr>, sex <chr>, statushiv <chr>, ...
-
 Now that we have all the filters we need, let’s get to grouping and
 summarizing\! Notice, since I want to summarize across all the variables
 in the MSD that represent quarters, I will use
@@ -327,16 +281,6 @@ df_msd %>%
   summarise(across(starts_with("qtr"), sum, na.rm = TRUE), .groups = "drop") 
 ```
 
-    ## # A tibble: 4 x 10
-    ##   snu1   fiscal_year indic~1 stand~2 fundi~3 prime~4   qtr1   qtr2   qtr3   qtr4
-    ##   <chr>        <int> <chr>   <chr>   <chr>   <chr>    <dbl>  <dbl>  <dbl>  <dbl>
-    ## 1 Sofala        2021 TX_CURR Total ~ CDC     MINIST~  30718  32875  33854  34794
-    ## 2 Sofala        2021 TX_CURR Total ~ USAID   Abt As~  90174  94914  98400 106581
-    ## 3 Sofala        2022 TX_CURR Total ~ CDC     MINIST~  36828  33084  35853      0
-    ## 4 Sofala        2022 TX_CURR Total ~ USAID   Abt As~ 117243 124825 131395      0
-    ## # ... with abbreviated variable names 1: indicator,
-    ## #   2: standardizeddisaggregate, 3: funding_agency, 4: prime_partner_name
-
 We’re almost there\! Now that our data is summarize, we want to reshape
 this long so we can more easily filter for the periods we are interested
 in. We’ll use `gophr::reshape_msd()` to achieve this.
@@ -353,26 +297,6 @@ df_msd %>%
   summarise(across(starts_with("qtr"), sum, na.rm = TRUE), .groups = "drop") %>% 
   gophr::reshape_msd()
 ```
-
-    ## # A tibble: 14 x 8
-    ##    snu1   period indicator standardizeddisaggre~1 fundi~2 prime~3 perio~4  value
-    ##    <chr>  <chr>  <chr>     <chr>                  <chr>   <chr>   <chr>    <dbl>
-    ##  1 Sofala FY21Q1 TX_CURR   Total Numerator        CDC     MINIST~ results  30718
-    ##  2 Sofala FY21Q2 TX_CURR   Total Numerator        CDC     MINIST~ results  32875
-    ##  3 Sofala FY21Q3 TX_CURR   Total Numerator        CDC     MINIST~ results  33854
-    ##  4 Sofala FY21Q4 TX_CURR   Total Numerator        CDC     MINIST~ results  34794
-    ##  5 Sofala FY21Q1 TX_CURR   Total Numerator        USAID   Abt As~ results  90174
-    ##  6 Sofala FY21Q2 TX_CURR   Total Numerator        USAID   Abt As~ results  94914
-    ##  7 Sofala FY21Q3 TX_CURR   Total Numerator        USAID   Abt As~ results  98400
-    ##  8 Sofala FY21Q4 TX_CURR   Total Numerator        USAID   Abt As~ results 106581
-    ##  9 Sofala FY22Q1 TX_CURR   Total Numerator        CDC     MINIST~ results  36828
-    ## 10 Sofala FY22Q2 TX_CURR   Total Numerator        CDC     MINIST~ results  33084
-    ## 11 Sofala FY22Q3 TX_CURR   Total Numerator        CDC     MINIST~ results  35853
-    ## 12 Sofala FY22Q1 TX_CURR   Total Numerator        USAID   Abt As~ results 117243
-    ## 13 Sofala FY22Q2 TX_CURR   Total Numerator        USAID   Abt As~ results 124825
-    ## 14 Sofala FY22Q3 TX_CURR   Total Numerator        USAID   Abt As~ results 131395
-    ## # ... with abbreviated variable names 1: standardizeddisaggregate,
-    ## #   2: funding_agency, 3: prime_partner_name, 4: period_type
 
 Now we have stacked data with the period as a variable in the dataset\!
 This is just one example of the numerous different things we can do when
@@ -409,21 +333,6 @@ df_plhiv <- tame_dp(path, type = "PLHIV")
 
 head(df_dp)
 ```
-
-    ## # A tibble: 6 x 17
-    ##   operatin~1 count~2 snu1  psnu  psnuuid snupr~3 fisca~4 indic~5 stand~6 numer~7
-    ##   <chr>      <chr>   <chr> <chr> <chr>   <chr>     <dbl> <chr>   <chr>   <chr>  
-    ## 1 Mozambique Mozamb~ _Mil~ _Mil~ siMZUt~ 97 - A~    2021 CXCA_S~ Age/Se~ N      
-    ## 2 Mozambique Mozamb~ _Mil~ _Mil~ siMZUt~ 97 - A~    2021 CXCA_S~ Age/Se~ N      
-    ## 3 Mozambique Mozamb~ _Mil~ _Mil~ siMZUt~ 97 - A~    2021 CXCA_S~ Age/Se~ N      
-    ## 4 Mozambique Mozamb~ _Mil~ _Mil~ siMZUt~ 97 - A~    2021 CXCA_S~ Age/Se~ N      
-    ## 5 Mozambique Mozamb~ _Mil~ _Mil~ siMZUt~ 97 - A~    2021 CXCA_S~ Age/Se~ N      
-    ## 6 Mozambique Mozamb~ _Mil~ _Mil~ siMZUt~ 97 - A~    2021 PREP_C~ Age/Sex N      
-    ## # ... with 7 more variables: ageasentered <chr>, sex <chr>, modality <chr>,
-    ## #   statushiv <chr>, otherdisaggregate <chr>, cumulative <dbl>, targets <dbl>,
-    ## #   and abbreviated variable names 1: operatingunit, 2: countryname,
-    ## #   3: snuprioritization, 4: fiscal_year, 5: indicator,
-    ## #   6: standardizeddisaggregate, 7: numeratordenom
 
 ### grabR
 

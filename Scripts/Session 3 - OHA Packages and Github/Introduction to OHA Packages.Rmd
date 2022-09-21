@@ -88,12 +88,11 @@ Utility function package to optimize working with the MER Structured Dataset in 
   - `gophr::source_info()` - extracts MSD source information
   
 Let's work through a quick example of putting `glamr` and `gophr` together - let's say we wanted to work with the latest PSNU by IM MER Structured Dataset for Mozambique. I am going to pull that down from Panorama (this can also be automated using an R package for API calls called `grabr`) and save this to the data folder that my `si_path()` routes to. This will be the folder that I save all of  my MSDs in.
-```{r}
+```{r, echo = FALSE}
 df_msd <- glamr::si_path() %>% #grab data folderpath
   glamr::return_latest("MER_Structured_Datasets_PSNU_IM_FY20-23_20220812_v1_1_Mozambique") %>% #return latest file to match the pattern specified
   gophr::read_msd() #read the MSD in to R
 
-head(df_msd) #inspect
 ```
 
 Now, let's try to put this all together. We have our MSD loaded, so now we can draw on some of our tidyverse skills to work answer some analytic questions.
@@ -119,7 +118,7 @@ df_msd %>%
 Spot the difference? Small tweaks like this can b incredibly valuable in your data wrangling. Now, let's apply what we know about the tidyverse to try to answer the question above.
 
 Let's build our filters first:
-```{r}
+```{r, eval = FALSE}
 
 # We know we want TX_CURRdata only for USAID and CDC in Sofala in FY22, and standardizeddisaggregate =Total Numerator
 
@@ -135,7 +134,7 @@ df_msd %>%
 
 Now that we have all the filters we need, let's get to grouping and summarizing! Notice, since I want to summarize across all the variables in the MSD that represent quarters, I will use `summarize(across(starts_with("qtr")))` as a series of heper functions.
 
-```{r}
+```{r, eval = FALSE}
 df_msd %>% 
   gophr::clean_agency() %>% 
   filter(snu1 == "Sofala",
@@ -150,7 +149,7 @@ df_msd %>%
 
 We're almost there! Now that our data is summarize, we want to reshape this long so we can more easily filter for the periods we are interested in. We'll use `gophr::reshape_msd()` to achieve this.
 
-```{r}
+```{r, eval = FALSE}
 df_msd %>% 
   gophr::clean_agency() %>% 
   filter(snu1 == "Sofala",
@@ -175,7 +174,7 @@ Easily import PSNUxIM targets from Data Pack and make tidy/usable
   - `tameDP::tame_dp()` - export tidy data from Data Pack
   `tameDP::tame_plhiv()` - export TIDY PLHIV data from Data Pack
   
-```{r}
+```{r, eval = FALSE}
 library(tameDP)
 
 #datapack file path
