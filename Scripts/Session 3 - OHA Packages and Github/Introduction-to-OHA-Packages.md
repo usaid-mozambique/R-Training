@@ -3,23 +3,26 @@ OHA R Packages
 Author: Karishma Srikanth
 9/21/2022
 
-  - [Introduction](#introduction)
-      - [Why did we decide to build R packages for our
-        work?](#why-did-we-decide-to-build-r-packages-for-our-work)
-  - [Closer Look at Core OHA R
-    Packages](#closer-look-at-core-oha-r-packages)
-      - [glamr](#glamr)
-      - [gophr](#gophr)
-      - [tameDP](#tamedp)
-      - [grabR](#grabr)
-      - [glitr](#glitr)
-      - [gisr](#gisr)
-      - [gagglr](#gagglr)
-  - [Additional OHA Packages](#additional-oha-packages)
-      - [mindthegap](#mindthegap)
-      - [selfdestructin5](#selfdestructin5)
-      - [COVIDutilities](#covidutilities)
-      - [cascade](#cascade)
+- <a href="#introduction" id="toc-introduction">Introduction</a>
+  - <a href="#why-did-we-decide-to-build-r-packages-for-our-work"
+    id="toc-why-did-we-decide-to-build-r-packages-for-our-work">Why did we
+    decide to build R packages for our work?</a>
+- <a href="#closer-look-at-core-oha-r-packages"
+  id="toc-closer-look-at-core-oha-r-packages">Closer Look at Core OHA R
+  Packages</a>
+  - <a href="#glamr" id="toc-glamr">glamr</a>
+  - <a href="#gophr" id="toc-gophr">gophr</a>
+  - <a href="#tamedp" id="toc-tamedp">tameDP</a>
+  - <a href="#grabr" id="toc-grabr">grabR</a>
+  - <a href="#glitr" id="toc-glitr">glitr</a>
+  - <a href="#gisr" id="toc-gisr">gisr</a>
+  - <a href="#gagglr" id="toc-gagglr">gagglr</a>
+- <a href="#additional-oha-packages"
+  id="toc-additional-oha-packages">Additional OHA Packages</a>
+  - <a href="#mindthegap" id="toc-mindthegap">mindthegap</a>
+  - <a href="#selfdestructin5" id="toc-selfdestructin5">selfdestructin5</a>
+  - <a href="#covidutilities" id="toc-covidutilities">COVIDutilities</a>
+  - <a href="#cascade" id="toc-cascade">cascade</a>
 
 ## Introduction
 
@@ -35,12 +38,11 @@ actively participate during the sessions. Please ensure you have
 RStudio, RTools and R installed on your device prior to this session, as
 well as Git and Github Desktop.
 
-  - Learning Objectives:
-      - Learn about the intuition between creating R packages for our
-        team’s workflow
-      - Overview of OHA’s R Package Environment
-      - Deep Dive into specific packages that are useful to your
-        workflow
+- Learning Objectives:
+  - Learn about the intuition between creating R packages for our team’s
+    workflow
+  - Overview of OHA’s R Package Environment
+  - Deep Dive into specific packages that are useful to your workflow
 
 ### Why did we decide to build R packages for our work?
 
@@ -62,10 +64,10 @@ mostly quarterly/monthly data - using packages meant that we didn’t have
 to keep reinventing the wheel each quarter, and could instead automate
 tasks every cycle.
 
-  - TL;DR - R packages helped us to:
-      - Standardize workflows, better consistency
-      - Improve reproducibility and efficiency
-      - Make work more approachable
+- TL;DR - R packages helped us to:
+  - Standardize workflows, better consistency
+  - Improve reproducibility and efficiency
+  - Make work more approachable
 
 #### Load Libraries
 
@@ -73,10 +75,12 @@ tasks every cycle.
 library(tidyverse) #install.packages("tidyverse")
 ```
 
+    ## Warning: package 'tidyverse' was built under R version 4.1.3
+
     ## -- Attaching packages --------------------------------------- tidyverse 1.3.2 --
-    ## v ggplot2 3.3.6     v purrr   0.3.4
+    ## v ggplot2 3.4.0     v purrr   0.3.4
     ## v tibble  3.1.8     v dplyr   1.0.9
-    ## v tidyr   1.2.0     v stringr 1.4.1
+    ## v tidyr   1.2.0     v stringr 1.5.0
     ## v readr   2.1.2     v forcats 0.5.1
 
     ## Warning: package 'ggplot2' was built under R version 4.1.3
@@ -110,21 +114,32 @@ library(scales)
 
 ``` r
 library(glitr) #remotes::install_github("USAID-OHA-SI/glitr", build_vignettes = TRUE)
-library(glamr)
-library(gophr)
-library(grabr)
 ```
 
-    ## 
-    ## Attaching package: 'grabr'
-    ## 
-    ## The following object is masked from 'package:glamr':
-    ## 
-    ##     package_check
+    ## Warning: [glitr] status: OUT OF DATE - local version of package is behind the
+    ## latest release on GitHub
 
 ``` r
+library(glamr)
+```
+
+    ## Warning: [glamr] status: OUT OF DATE - local version of package is behind the
+    ## latest release on GitHub
+
+``` r
+library(gophr)
+```
+
+    ## Warning: [gophr] status: OUT OF DATE - local version of package is behind the
+    ## latest release on GitHub
+
+``` r
+library(grabr)
 library(tameDP)
 ```
+
+    ## Warning: [tameDP] status: OUT OF DATE - local version of package is behind the
+    ## latest release on GitHub
 
 ## Closer Look at Core OHA R Packages
 
@@ -135,14 +150,12 @@ library(tameDP)
 **Motivation:** Utility function package to make it easier to optimize
 the teams workflow when working with PEPFAR data
 
-  - Some helpful functions:
-      - `glamr::si_setup()` - sets up standard project setup
-      - `glamr::si_paths()` - creates standard folder paths
-      - `glamr::load_secrets()` - loads stored credentials
-      - `glamr::return_latest()` - returns the latest file in a folder
-        and checks for a pattern that is specified, if so
-
-<!-- end list -->
+- Some helpful functions:
+  - `glamr::si_setup()` - sets up standard project setup
+  - `glamr::si_paths()` - creates standard folder paths
+  - `glamr::load_secrets()` - loads stored credentials
+  - `glamr::return_latest()` - returns the latest file in a folder and
+    checks for a pattern that is specified, if so
 
 ``` r
 glamr::si_setup()
@@ -172,7 +185,7 @@ glamr::si_path() %>%
   glamr::return_latest("Mozambique")
 ```
 
-    ## [1] "C:/Users/ksrikanth/Documents/Data/MER_Structured_Datasets_PSNU_IM_FY20-23_20220812_v1_1_Mozambique.zip"
+    ## [1] "C:/Users/ksrikanth/Documents/Data/MER_Structured_Datasets_PSNU_IM_FY21-23_20230210_v1_1_Mozambique.zip"
 
 ### gophr
 
@@ -181,13 +194,13 @@ glamr::si_path() %>%
 **Motivation:** Utility function package to optimize working with the
 MER Structured Dataset in R
 
-  - Some helpful functions:
-      - `gophr::read_msd()` - imports MER dataset from .txt and coverts
-        to .rds file
-      - `gophr::reshapse_msd()` - reshapes MSD long or wide
-      - `gophr::clean_*()` - cleans up data in specific areas
-        (`clean_agency()`, `clean_indicator()`, etc.)
-      - `gophr::source_info()` - extracts MSD source information
+- Some helpful functions:
+  - `gophr::read_msd()` - imports MER dataset from .txt and coverts to
+    .rds file
+  - `gophr::reshapse_msd()` - reshapes MSD long or wide
+  - `gophr::clean_*()` - cleans up data in specific areas
+    (`clean_agency()`, `clean_indicator()`, etc.)
+  - `gophr::source_info()` - extracts MSD source information
 
 Let’s work through a quick example of putting `glamr` and `gophr`
 together - let’s say we wanted to work with the latest PSNU by IM MER
@@ -196,15 +209,18 @@ Panorama (this can also be automated using an R package for API calls
 called `grabr`) and save this to the data folder that my `si_path()`
 routes to. This will be the folder that I save all of my MSDs in.
 
+    ## Warning: `read_msd()` was deprecated in gophr 3.2.0.
+    ## i Please use `read_psd()` instead.
+
 Now, let’s try to put this all together. We have our MSD loaded, so now
 we can draw on some of our tidyverse skills to work answer some analytic
 questions.
 
-  - **Question**:
-      - Want to identify TX\_CURR Total Numerator by funding agency and
-        prime partner
-      - in FY22 by quarter
-      - in Sofala province
+- **Question**:
+  - Want to identify TX_CURR Total Numerator by funding agency and prime
+    partner
+  - in FY22 by quarter
+  - in Sofala province
 
 First, let’s inspect our data. I am going to do some basic counts to
 show the utility of the `clean_*()` functions in `gophr`.
@@ -265,7 +281,7 @@ df_msd %>%
 ```
 
 Now that we have all the filters we need, let’s get to grouping and
-summarizing\! Notice, since I want to summarize across all the variables
+summarizing! Notice, since I want to summarize across all the variables
 in the MSD that represent quarters, I will use
 `summarize(across(starts_with("qtr")))` as a series of heper functions.
 
@@ -281,7 +297,7 @@ df_msd %>%
   summarise(across(starts_with("qtr"), sum, na.rm = TRUE), .groups = "drop") 
 ```
 
-We’re almost there\! Now that our data is summarize, we want to reshape
+We’re almost there! Now that our data is summarize, we want to reshape
 this long so we can more easily filter for the periods we are interested
 in. We’ll use `gophr::reshape_msd()` to achieve this.
 
@@ -298,7 +314,7 @@ df_msd %>%
   gophr::reshape_msd()
 ```
 
-Now we have stacked data with the period as a variable in the dataset\!
+Now we have stacked data with the period as a variable in the dataset!
 This is just one example of the numerous different things we can do when
 we combine the `tidyverse` and the OHA packages.
 
@@ -309,11 +325,9 @@ we combine the `tidyverse` and the OHA packages.
 **Motivation:** Easily import PSNUxIM targets from Data Pack and make
 tidy/usable
 
-  - Some helpful functions:
-      - `tameDP::tame_dp()` - export tidy data from Data Pack
-        `tameDP::tame_plhiv()` - export TIDY PLHIV data from Data Pack
-
-<!-- end list -->
+- Some helpful functions:
+  - `tameDP::tame_dp()` - export tidy data from Data Pack
+    `tameDP::tame_plhiv()` - export TIDY PLHIV data from Data Pack
 
 ``` r
 library(tameDP)
@@ -341,35 +355,18 @@ head(df_dp)
 **Motivation:** Extend glamr utilities functions to API utility
 functions to extract from DATIM and Pano
 
-  - Some helpful functions:
-      - `pano_elements()` - extract data element details from html
-        content
-      - `datim_dimesions()` - get PEPFAR/DATIM dimensions
-      - `get_*()` - extract various orgunit hierarchy metadata from
-        DATIM
+- Some helpful functions:
+  - `pano_elements()` - extract data element details from html content
+  - `datim_dimesions()` - get PEPFAR/DATIM dimensions
+  - `get_*()` - extract various orgunit hierarchy metadata from DATIM
 
 Let’s say I wanted to get the orgunituid for each OU. I could use the
 function `grabr::get_orguids()` to grab ever uid at the specific level I
 determine. In this case, I’ll specify level = 3 to get the OU level.
 
 ``` r
-grabr::get_orguids(level = 3)
+#grabr::get_orguids(level = 3)
 ```
-
-    ## # A tibble: 28 x 2
-    ##    uid         orgunit                         
-    ##    <chr>       <chr>                           
-    ##  1 XOivy2uDpMF Angola                          
-    ##  2 ptVxnBssua6 Asia Region                     
-    ##  3 l1KFEXKI4Dg Botswana                        
-    ##  4 Qh4XMQJhbk8 Burundi                         
-    ##  5 bQQJe0cC1eD Cameroon                        
-    ##  6 ds0ADyc9UCU Cote d'Ivoire                   
-    ##  7 ANN4YCOufcP Democratic Republic of the Congo
-    ##  8 NzelIFhEv3C Dominican Republic              
-    ##  9 V0qMZH29CtN Eswatini                        
-    ## 10 IH1kchw86uA Ethiopia                        
-    ## # ... with 18 more rows
 
 ### glitr
 
@@ -378,10 +375,9 @@ grabr::get_orguids(level = 3)
 **Motivation:** Allows user to easily adorn plots created in ggplot() in
 a standardized SI style
 
-  - Some helpful functions:
-      - `glitr::si_style()` - standard SI styles applied to plots
-      - `glitr::si_palettes()` - color palette developed by OHA/SIEI for
-        use
+- Some helpful functions:
+  - `glitr::si_style()` - standard SI styles applied to plots
+  - `glitr::si_palettes()` - color palette developed by OHA/SIEI for use
 
 We’ll cover visualization more later, but here’s a snapshot of
 OHA/SIEI’s base color palette that was developed.
@@ -398,9 +394,9 @@ show_col(si_palettes$siei_pairs)
 
 **Motivation:** OHA geospatial analytics utilities package
 
-  - Some helpful functions:
-      - `gisr::get_basemap()` - pulls basemap
-      - `gisr::extract_boundaries()` - extract PEPFAR Orgunit Boundaries
+- Some helpful functions:
+  - `gisr::get_basemap()` - pulls basemap
+  - `gisr::extract_boundaries()` - extract PEPFAR Orgunit Boundaries
 
 ### gagglr
 
@@ -410,11 +406,9 @@ show_col(si_palettes$siei_pairs)
 to users to ensure they have the latest versions of the core OHA utility
 packages
 
-  - Some helpful functions:
-      - `gagglr::oha_check()` - check for OHA package updates
-      - `gagglr::oha_update()`- update OHA packages
-
-<!-- end list -->
+- Some helpful functions:
+  - `gagglr::oha_check()` - check for OHA package updates
+  - `gagglr::oha_update()`- update OHA packages
 
 ``` r
 library(gagglr)
@@ -436,15 +430,15 @@ gagglr::oha_check()
     ## * R: 4.1.2
     ## -- Core packages ---------------------------------------------------------------
     ## * gisr            (0.2.1     ) [2022-03-09]
-    ## * glamr           (1.1.0     )
-    ## * glitr           (0.1.0     ) [2022-02-25]
-    ## * gophr           (3.1.0     )
+    ## * glamr           (1.1.0     ) [2023-01-19]
+    ## * glitr           (0.1.1     ) [2023-02-09]
+    ## * gophr           (3.2.0     ) [2023-02-09]
     ## -- Non-core packages -----------------------------------------------------------
     ## * COVIDutilities  (1.1.0     ) [2022-03-04]
     ## * gagglr          (0.0.0.9000) [2022-08-04]
-    ## * mindthegap      (1.0.0     ) [2022-08-25]
+    ## * mindthegap      (1.0.0     )
     ## * selfdestructin5 (0.1.0     ) [2022-04-05]
-    ## * tameDP          (4.0.2     ) [2022-03-02]
+    ## * tameDP          (5.0.0     ) [2023-03-02]
     ## * Wavelength      (2.4.0     ) [2022-04-12]
 
 ## Additional OHA Packages

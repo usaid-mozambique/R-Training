@@ -93,6 +93,11 @@ df_msd <- glamr::si_path() %>% #grab data folderpath
   glamr::return_latest("MER_Structured_Datasets_PSNU_IM_FY20-23_20220812_v1_1_Mozambique") %>% #return latest file to match the pattern specified
   gophr::read_msd() #read the MSD in to R
 
+
+source <- glamr::si_path() %>% #grab data folderpath
+  glamr::return_latest("MER_Structured_Datasets_PSNU_IM_FY20-23_20220812_v1_1_Mozambique") %>% 
+  source_info()
+
 ```
 
 Now, let's try to put this all together. We have our MSD loaded, so now we can draw on some of our tidyverse skills to work answer some analytic questions.
@@ -208,7 +213,7 @@ Extend glamr utilities functions to API utility functions to extract from DATIM 
 Let's say I wanted to get the orgunituid for each OU. I could use the function `grabr::get_orguids()` to grab ever uid at the specific level I determine. In this case, I'll specify level = 3 to get the OU level.
 
 ```{r}
-grabr::get_orguids(level = 3)
+#grabr::get_orguids(level = 3)
 ```
 
 ### glitr
